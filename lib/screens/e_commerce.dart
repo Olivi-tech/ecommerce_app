@@ -23,6 +23,8 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    print('the width is $width');
+    double mainAxisExtent = width < 720 ? 210 : 200;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -101,12 +103,11 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
                   height: height,
                   width: width,
                   child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisExtent: 200,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        mainAxisExtent: mainAxisExtent,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20),
                     itemBuilder: (context, index) => Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),

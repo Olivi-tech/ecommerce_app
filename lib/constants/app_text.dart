@@ -4,27 +4,11 @@ class AppText {
   static const updateMessage = 'Successfully updated';
   static const deleteMessage = 'Successfully deleted';
   static const List<String> ecommerceLabels = [
-    'Fitness',
+    'Makeup',
     'Sports',
-    'Accessories',
+    'Jewellery',
     'Clothing',
     'All'
-  ];
-  static const List<String> optionsOfExercise = [
-    'Balance',
-    'Cardio',
-    'Running',
-    'Stretching',
-    'HIT',
-    'Fitness',
-    'None'
-  ];
-  static const List<String> dietOptions = [
-    'Vegetarian',
-    'Vegan',
-    'Keto',
-    'Mediterranean',
-    'No',
   ];
 
   /// Firebase References

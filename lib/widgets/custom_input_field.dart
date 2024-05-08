@@ -10,6 +10,7 @@ class CustomInputField extends StatelessWidget {
   final bool readOnly;
   final double? height;
   final double? contentPadding;
+  final bool isVisibleText;
   final double? width;
   final int? maxLine;
   final String? Function(String?)? validator; // Validator function
@@ -19,6 +20,7 @@ class CustomInputField extends StatelessWidget {
     this.readOnly = false,
     this.suffixIcon,
     this.contentPadding = 20,
+    this.isVisibleText = false,
     required this.labelText,
     this.maxLine,
     this.width,
@@ -35,6 +37,7 @@ class CustomInputField extends StatelessWidget {
         // Using TextFormField for validation support
         readOnly: readOnly,
         maxLines: maxLine,
+        obscureText: isVisibleText,
         textAlignVertical: TextAlignVertical.top,
         controller: controller,
         validator: validator, // Passing the validator function
@@ -42,7 +45,7 @@ class CustomInputField extends StatelessWidget {
           suffixIcon: suffixIcon,
           hintText: labelText,
           contentPadding: const EdgeInsets.only(left: 10, top: 10),
-          hintStyle: TextStyle(color: Colors.grey.withOpacity(0.3)),
+          hintStyle: TextStyle(color: AppColors.black.withOpacity(0.3)),
           prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),

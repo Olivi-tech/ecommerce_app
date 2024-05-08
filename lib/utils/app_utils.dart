@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +6,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-
 import '../constants/app_colors.dart';
 import '../constants/app_text.dart';
 import '../widgets/custom_snackbar.dart';
@@ -46,7 +43,8 @@ class AppUtils {
   }
 
   static String getUniqueID() {
-    return const Uuid().v4();
+    Uuid uid = Uuid();
+    return uid.v4();
   }
 
   static toastMessage(String message) {
@@ -54,8 +52,8 @@ class AppUtils {
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM_RIGHT,
-        webBgColor: '#8D6BF2',
-        textColor: AppColors.white,
+        webBgColor: '#000000',
+        textColor: AppColors.red,
         fontSize: 16.0);
   }
 }

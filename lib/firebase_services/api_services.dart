@@ -9,7 +9,6 @@ import '../widgets/custom_snackbar.dart';
 class ApiServices {
   static Future<String?> uploadOrUpdateImage(
       {required Uint8List? imageBytes,
-      required String reference,
       required String imageId,
       bool isVideo = false,
       required BuildContext context}) async {

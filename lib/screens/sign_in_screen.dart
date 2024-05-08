@@ -1,12 +1,11 @@
-import 'package:e_commerece_admin_panel/constants/app_images.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import '../clippers/sign_in_clipper.dart';
 import '../constants/app_colors.dart';
 import '../firebase_services/auth_services.dart';
 import '../widgets/custom_button.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/custom_input_field.dart';
+import 'home_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -24,7 +23,9 @@ class _SignInScreenState extends State<SignInScreen> {
   void initState() {
     emailController = TextEditingController();
     passWordController = TextEditingController();
-    passwordVisibility = ValueNotifier<bool>(true);
+    passwordVisibility = ValueNotifier<bool>(false);
+    emailController.text = 'test@gmail.com';
+    passWordController.text = '123456';
     loading = ValueNotifier<bool>(false);
     super.initState();
   }
@@ -63,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: SizedBox(
                         height: height * 0.4,
                         width: width * 0.3,
-                        child: SvgPicture.asset(AppImages.signin)),
+                        child: Image.asset('assets/images/ecommerece.png')),
                   ),
                 )
               ],
@@ -118,29 +119,34 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: height * 0.1,
                         width: width * 0.28,
                         child: ValueListenableBuilder<bool>(
-                          builder: (context, isVisible, child) =>
-                              CustomInputField(
-                            labelText: 'Password',
-                            suffixIcon: GestureDetector(
-                              onTap: () {
-                                passwordVisibility.value =
-                                    !passwordVisibility.value;
-                              },
-                              child: Icon(
-                                isVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                          builder: (context, isVisible, child) {
+                            return CustomInputField(
+                              labelText: 'Password',
+                              maxLine: 1,
+                              controller: passWordController,
+                              isVisibleText: isVisible,
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  passwordVisibility.value =
+                                      !passwordVisibility.value;
+                                },
+                                child: Icon(
+                                  isVisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
                               ),
-                            ),
-                            controller: passWordController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter a password';
-                              } else {
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please Enter your password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters long';
+                                }
                                 return null;
-                              }
-                            },
-                          ),
+                              },
+                            );
+                          },
                           valueListenable: passwordVisibility,
                         ),
                       ),
@@ -161,6 +167,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       email: emailController.text,
                                       password: passWordController.text,
                                       context: context);
+
                                   loading.value = false;
                                 }
                               },

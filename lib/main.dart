@@ -1,12 +1,11 @@
 import 'package:e_commerece_admin_panel/firebase_options.dart';
 import 'package:e_commerece_admin_panel/providers/image_picker_provider.dart';
 import 'package:e_commerece_admin_panel/providers/screen_transition_provider.dart';
-import 'package:e_commerece_admin_panel/screens/home_screen.dart';
 import 'package:e_commerece_admin_panel/screens/sign_in_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/file_name_picker_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

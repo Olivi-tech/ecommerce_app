@@ -29,20 +29,18 @@ class _HomeScreenState extends State<HomeScreen> {
       key: _globalKey,
       drawer: const CustomDrawer(),
       appBar: AppBar(
-        backgroundColor: Colors.grey,
-        leading: isDrawerVisible
-            ? null
-            : IconButton(
-                onPressed: () {
-                  _globalKey.currentState!.openDrawer();
-                },
-                icon: const Icon(
-                  Icons.menu,
-                  color: AppColors.red,
-                )),
+        backgroundColor: AppColors.red,
+        leading: IconButton(
+            onPressed: () {
+              _globalKey.currentState!.openDrawer();
+            },
+            icon: const Icon(
+              Icons.menu,
+              color: AppColors.white,
+            )),
         title: const CustomText(
           label: 'Dashboard',
-          color: AppColors.black,
+          color: AppColors.white,
         ),
       ),
       body: Row(

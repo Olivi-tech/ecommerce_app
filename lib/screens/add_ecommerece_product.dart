@@ -1,12 +1,16 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import '../../models/ecommerce_product_model.dart';
 import '../../utils/app_utils.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text.dart';
 import '../firebase_services/api_services.dart';
+import '../firebase_services/auth_services.dart';
 import '../firebase_services/ecommerece_services.dart';
+import '../providers/image_picker_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_container.dart';
 import '../widgets/custom_display_image.dart';
@@ -31,13 +35,16 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
   final TextEditingController _deliveryChargesController =
       TextEditingController();
   final TextEditingController _discountController = TextEditingController();
+  late ImagePickerProvider imagePickerProvider;
   ValueNotifier<Uint8List?> imageBytesNotifier =
       ValueNotifier(Uint8List.fromList([]));
   ValueNotifier<bool> isLoadingNotifier = ValueNotifier(false);
-  String imageUrl = '';
+
   ValueNotifier<String> selectedValueNotifier = ValueNotifier('All');
   @override
   void initState() {
+    imagePickerProvider =
+        Provider.of<ImagePickerProvider>(context, listen: false);
     if (widget.ecommerceProductModel != null) {
       _titleController.text = widget.ecommerceProductModel!.title!;
       _priceController.text = widget.ecommerceProductModel!.price!.toString();
@@ -48,7 +55,6 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
       _discountController.text =
           widget.ecommerceProductModel!.discount!.toString();
       _productCodeController.text = widget.ecommerceProductModel!.productCode!;
-      imageUrl = widget.ecommerceProductModel!.imageUrl!;
     }
     super.initState();
   }
@@ -61,10 +67,30 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
     return Scaffold(
       backgroundColor: AppColors.greyColor,
       appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: const CustomText(
-            label: 'Ecommerce',
-            weight: FontWeight.w600,
+          backgroundColor: AppColors.red,
+          automaticallyImplyLeading: false,
+          title: SizedBox(
+            width: width * 0.15,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    imagePickerProvider.clear();
+                  },
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.white,
+                  ),
+                ),
+                const CustomText(
+                  label: 'Ecommerce',
+                  color: AppColors.white,
+                  weight: FontWeight.w600,
+                ),
+              ],
+            ),
           )),
       body: Form(
         key: _formKey,
@@ -93,6 +119,7 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                             ),
                             const CustomText(
                               label: 'Product title',
+                              color: AppColors.black,
                               size: 12,
                               weight: FontWeight.w400,
                             ),
@@ -137,58 +164,139 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                 label: 'Image',
                                 size: 12,
                                 weight: FontWeight.w400),
-                            const CustomSize(
-                              height: 5,
-                            ),
-                            Row(
-                              children: [
-                                const CustomSize(
-                                  width: 5,
-                                ),
-                                ValueListenableBuilder(
-                                  valueListenable: imageBytesNotifier,
-                                  builder: (context, image, child) =>
-                                      CustomImageDisplay(
-                                    imageFile: imageBytesNotifier.value,
-                                    imageUrl:
-                                        imageUrl /*widget.ecommerceProductModel.imageUrl*/,
-                                  ),
-                                ),
-                                const CustomSize(
-                                  width: 5,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    AppUtils.pickImage(context: context)
-                                        .then((imageBytes) {
-                                      imageBytesNotifier.value = imageBytes;
-                                    });
-                                  },
-                                  child: CustomContainer(
-                                    height: 45,
-                                    width: 45,
-                                    borderColor: Colors.grey.withOpacity(0.3),
-                                    color: AppColors.greyColor,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.cloud_upload,
+                            Align(
+                              alignment: Alignment.center,
+                              child: Consumer<ImagePickerProvider>(
+                                builder: (context, imageprovider, child) {
+                                  return Container(
+                                    height: height * 0.25,
+                                    width: width * 0.3,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
                                             color: AppColors.darkGrey,
-                                            size: 15,
-                                          ),
-                                          CustomText(
-                                            label: 'Upload',
-                                            size: 6,
-                                            color: AppColors.darkGrey,
+                                            width: 1)),
+                                    child: imagePickerProvider
+                                            .getImageUrl.isNotEmpty
+                                        ? ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: width,
+                                                  child: Image.network(
+                                                    imageprovider.getImageUrl,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    AuthServices
+                                                            .getImageFromGallery(
+                                                                context:
+                                                                    context)
+                                                        .then((image) async {
+                                                      imagePickerProvider
+                                                          .setImageUrl = '';
+                                                      imagePickerProvider
+                                                              .setImageBytes =
+                                                          image;
+                                                    });
+                                                  },
+                                                  child: const Icon(
+                                                    Icons.add_a_photo_outlined,
+                                                    color: AppColors.darkGrey,
+                                                    size: 30,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                        : imagePickerProvider
+                                                .getImageBytes.isNotEmpty
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: width,
+                                                      child: Image.memory(
+                                                        imageprovider
+                                                            .getImageBytes,
+                                                        fit: BoxFit.fitWidth,
+                                                      ),
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        AuthServices
+                                                                .getImageFromGallery(
+                                                                    context:
+                                                                        context)
+                                                            .then(
+                                                                (image) async {
+                                                          imagePickerProvider
+                                                                  .setImageBytes =
+                                                              image;
+                                                        });
+                                                      },
+                                                      child: const Icon(
+                                                        Icons
+                                                            .add_a_photo_outlined,
+                                                        size: 30,
+                                                        color:
+                                                            AppColors.darkGrey,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 35,
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      AuthServices
+                                                              .getImageFromGallery(
+                                                                  context:
+                                                                      context)
+                                                          .then((image) async {
+                                                        imagePickerProvider
+                                                                .setImageBytes =
+                                                            image;
+                                                      });
+                                                    },
+                                                    child: const Icon(
+                                                      Icons
+                                                          .add_a_photo_outlined,
+                                                      size: 30,
+                                                      color: AppColors.darkGrey,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  const CustomText(
+                                                    color: AppColors.darkGrey,
+                                                    weight: FontWeight.w500,
+                                                    label:
+                                                        ' Add produt image thumbnail',
+                                                  )
+                                                ],
+                                              ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const CustomSize(
+                              width: 5,
                             ),
                             const CustomSize(
                               height: 10,
@@ -347,37 +455,30 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         isLoadingNotifier.value = true;
-                                        String productId =
-                                            widget.ecommerceProductModel != null
-                                                ? widget
-                                                    .ecommerceProductModel!.id!
-                                                : AppUtils.getUniqueID();
-                                        if (imageBytesNotifier.value != null &&
-                                            imageBytesNotifier
-                                                .value!.isNotEmpty) {
-                                          imageUrl = (await ApiServices
-                                              .uploadOrUpdateImage(
-                                                  context: context,
-                                                  imageBytes:
-                                                      imageBytesNotifier.value,
-                                                  reference: AppText
-                                                      .ecommerceCollectionRef,
-                                                  imageId: productId))!;
+                                        if (imagePickerProvider
+                                            .getImageBytes.isEmpty) {
+                                          AppUtils.toastMessage(
+                                              'Please Select Image');
+                                          return;
                                         }
-                                        EcommerceProductModel product =
+
+                                        imagePickerProvider.setImageUrl =
+                                            await AuthServices
+                                                .storeProductsImageToFirebase(
+                                                    context: context,
+                                                    image: imagePickerProvider
+                                                        .getImageBytes);
+                                        String docId = AppUtils.getUniqueID();
+                                        EcommerceProductModel productModel =
                                             EcommerceProductModel(
                                                 title: _titleController.text,
-                                                id: widget.ecommerceProductModel != null
-                                                    ? widget.ecommerceProductModel!
-                                                        .id
-                                                    : productId,
+                                                docId: docId,
                                                 category:
                                                     _categoryController.text,
                                                 description:
                                                     _descriptionController.text,
                                                 price: double.parse(
                                                     _priceController.text),
-                                                soldCount: 0,
                                                 deliveryCharges: double.parse(
                                                     _deliveryChargesController
                                                         .text),
@@ -385,27 +486,28 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                                     _discountController.text),
                                                 productCode:
                                                     _productCodeController.text,
-                                                imageUrl: imageUrl);
+                                                imageUrl: imagePickerProvider
+                                                    .getImageUrl);
                                         SchedulerBinding.instance
                                             .addPostFrameCallback((timeStamp) {
-                                          if (widget.ecommerceProductModel !=
-                                              null) {
-                                            EcommerceServices.updateProduct(
-                                                    productModel: product,
-                                                    context: context)
-                                                .then((value) {
-                                              isLoadingNotifier.value = false;
-                                            });
-                                          } else {
-                                            // ignore: use_build_context_synchronously
-                                            EcommerceServices.uploadProduct(
-                                                    productModel: product,
-                                                    context: context,
-                                                    productId: productId)
-                                                .then((value) {
-                                              isLoadingNotifier.value = false;
-                                            });
-                                          }
+                                          // if (widget.ecommerceProductModel !=
+                                          //     null) {
+                                          //   EcommerceServices.updateProducts(
+                                          //           productModel: product,
+                                          //           context: context)
+                                          //       .then((value) {
+                                          //     isLoadingNotifier.value = false;
+                                          //   });
+                                          // } else {
+                                          // ignore: use_build_context_synchronously
+                                          EcommerceServices.uploadProducts(
+                                                  productModel: productModel,
+                                                  docId: docId)
+                                              .then((value) {
+                                            AppUtils.toastMessage(
+                                                'Product created successfully');
+                                            isLoadingNotifier.value = false;
+                                          });
                                         });
 
                                         // ignore: use_build_context_synchronously
