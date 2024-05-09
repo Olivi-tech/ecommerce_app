@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../constants/app_colors.dart';
 
@@ -13,7 +14,8 @@ class CustomInputField extends StatelessWidget {
   final bool isVisibleText;
   final double? width;
   final int? maxLine;
-  final String? Function(String?)? validator; // Validator function
+  final String? Function(String?)? validator;
+  final List<TextInputFormatter>? inputFormatters; // Validator function
   const CustomInputField({
     super.key,
     required this.controller,
@@ -23,10 +25,11 @@ class CustomInputField extends StatelessWidget {
     this.isVisibleText = false,
     required this.labelText,
     this.maxLine,
+    this.inputFormatters,
     this.width,
     this.height,
     this.prefixIcon,
-    this.validator, // Validator parameter
+    this.validator,
   });
   @override
   Widget build(BuildContext context) {
@@ -34,13 +37,14 @@ class CustomInputField extends StatelessWidget {
       height: height,
       width: width,
       child: TextFormField(
-        // Using TextFormField for validation support
         readOnly: readOnly,
         maxLines: maxLine,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         obscureText: isVisibleText,
         textAlignVertical: TextAlignVertical.top,
         controller: controller,
-        validator: validator, // Passing the validator function
+        validator: validator,
+        inputFormatters: inputFormatters,
         decoration: InputDecoration(
           suffixIcon: suffixIcon,
           hintText: labelText,

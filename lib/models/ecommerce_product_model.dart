@@ -43,10 +43,8 @@ class EcommerceProductModel {
     data['description'] = description;
     data['category'] = category;
     data['price'] = price;
-
     data['delivery_charges'] = deliveryCharges;
     data['discount'] = discount;
-
     return data;
   }
 }

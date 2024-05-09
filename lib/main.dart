@@ -1,4 +1,5 @@
 import 'package:e_commerece_admin_panel/firebase_options.dart';
+import 'package:e_commerece_admin_panel/models/product_model_provide.dart';
 import 'package:e_commerece_admin_panel/providers/image_picker_provider.dart';
 import 'package:e_commerece_admin_panel/providers/screen_transition_provider.dart';
 import 'package:e_commerece_admin_panel/screens/sign_in_screen.dart';
@@ -22,6 +23,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<ProductModelProvider>(
+          create: (context) => ProductModelProvider(),
+        ),
         ChangeNotifierProvider<FileNamePickerProvider>(
           create: (context) => FileNamePickerProvider(),
         ),

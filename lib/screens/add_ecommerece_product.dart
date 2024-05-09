@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../models/ecommerce_product_model.dart';
@@ -39,13 +40,14 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
   ValueNotifier<Uint8List?> imageBytesNotifier =
       ValueNotifier(Uint8List.fromList([]));
   ValueNotifier<bool> isLoadingNotifier = ValueNotifier(false);
-
+  String imageUrl = '';
   ValueNotifier<String> selectedValueNotifier = ValueNotifier('All');
   @override
   void initState() {
     imagePickerProvider =
         Provider.of<ImagePickerProvider>(context, listen: false);
     if (widget.ecommerceProductModel != null) {
+      imageUrl = widget.ecommerceProductModel!.imageUrl!;
       _titleController.text = widget.ecommerceProductModel!.title!;
       _priceController.text = widget.ecommerceProductModel!.price!.toString();
       _descriptionController.text = widget.ecommerceProductModel!.description!;
@@ -336,6 +338,10 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                       CustomInputField(
                                           maxLine: 1,
                                           controller: _priceController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[0-9]')),
+                                          ],
                                           labelText: 'Price',
                                           validator: (value) {
                                             if (value == null ||
@@ -365,6 +371,10 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                       CustomInputField(
                                           maxLine: 1,
                                           controller: _discountController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[0-9]')),
+                                          ],
                                           labelText: 'Discount',
                                           validator: (value) {
                                             if (value == null ||
@@ -398,6 +408,10 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                       CustomInputField(
                                           maxLine: 1,
                                           controller: _productCodeController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[0-9]')),
+                                          ],
                                           labelText: 'Code',
                                           validator: (value) {
                                             if (value == null ||
@@ -428,6 +442,10 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                           maxLine: 1,
                                           controller:
                                               _deliveryChargesController,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[0-9]')),
+                                          ],
                                           labelText: 'Delivery charges',
                                           validator: (value) {
                                             if (value == null ||
@@ -455,6 +473,7 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         isLoadingNotifier.value = true;
+
                                         if (imagePickerProvider
                                             .getImageBytes.isEmpty) {
                                           AppUtils.toastMessage(

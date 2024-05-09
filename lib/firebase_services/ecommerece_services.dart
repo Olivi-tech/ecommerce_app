@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/ecommerce_product_model.dart';
 
 class EcommerceServices {
+  static final fireStore = FirebaseFirestore.instance;
   static Future<void> uploadProducts(
       {required EcommerceProductModel productModel,
       required String docId}) async {
@@ -11,6 +12,20 @@ class EcommerceServices {
         );
   }
 
+  static Stream<List<EcommerceProductModel>> fetchProducts() {
+    return fireStore.collection('products').snapshots().map((query) {
+      return query.docs
+          .map((doc) => EcommerceProductModel.fromJson(jsonData: doc.data()))
+          .toList();
+    });
+  }
+
+  static Future<void> deleteProduct(String productId) async {
+    await FirebaseFirestore.instance
+        .collection('products')
+        .doc(productId)
+        .delete();
+  }
   // static Future<void> updateProduct({
   //   required EcommerceProductModel productModel,
   //   required BuildContext context,
