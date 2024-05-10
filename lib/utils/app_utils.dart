@@ -18,7 +18,7 @@ import '../widgets/custom_text.dart';
 class AppUtils {
   static CollectionReference fireStoreRef() {
     CollectionReference reference =
-        FirebaseFirestore.instance.collection(AppText.mainCollectionRef);
+        FirebaseFirestore.instance.collection('products');
     return reference;
   }
 
@@ -55,7 +55,7 @@ class AppUtils {
   static toastMessage(String message) {
     Fluttertoast.showToast(
         msg: message,
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM_RIGHT,
         webBgColor: '#000000',
         textColor: AppColors.red,

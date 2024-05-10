@@ -1,3 +1,4 @@
+import 'package:e_commerece_admin_panel/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomSnackBar {
@@ -10,9 +11,9 @@ class CustomSnackBar {
       SnackBar(
         content: Text(
           message,
-          style: TextStyle(color: isError ? Colors.red : Colors.white),
+          style: const TextStyle(color: AppColors.red),
         ),
-        backgroundColor: isError ? Colors.black : Colors.green,
+        backgroundColor: Colors.black,
       ),
     );
   }

@@ -1,20 +1,17 @@
-import 'dart:typed_data';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 import '../../models/ecommerce_product_model.dart';
 import '../../utils/app_utils.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text.dart';
-import '../firebase_services/api_services.dart';
 import '../firebase_services/auth_services.dart';
 import '../firebase_services/ecommerece_services.dart';
 import '../providers/image_picker_provider.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_container.dart';
-import '../widgets/custom_display_image.dart';
 import '../widgets/custom_drop_down.dart';
 import '../widgets/custom_input_field.dart';
 import '../widgets/custom_size.dart';
@@ -40,14 +37,14 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
   ValueNotifier<Uint8List?> imageBytesNotifier =
       ValueNotifier(Uint8List.fromList([]));
   ValueNotifier<bool> isLoadingNotifier = ValueNotifier(false);
-  String imageUrl = '';
+
   ValueNotifier<String> selectedValueNotifier = ValueNotifier('All');
   @override
   void initState() {
     imagePickerProvider =
         Provider.of<ImagePickerProvider>(context, listen: false);
     if (widget.ecommerceProductModel != null) {
-      imageUrl = widget.ecommerceProductModel!.imageUrl!;
+      imagePickerProvider.setImageUrl = widget.ecommerceProductModel!.imageUrl!;
       _titleController.text = widget.ecommerceProductModel!.title!;
       _priceController.text = widget.ecommerceProductModel!.price!.toString();
       _descriptionController.text = widget.ecommerceProductModel!.description!;
@@ -474,12 +471,18 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                       if (_formKey.currentState!.validate()) {
                                         isLoadingNotifier.value = true;
 
-                                        if (imagePickerProvider
-                                            .getImageBytes.isEmpty) {
-                                          AppUtils.toastMessage(
-                                              'Please Select Image');
-                                          return;
-                                        }
+                                        String productId =
+                                            widget.ecommerceProductModel != null
+                                                ? widget.ecommerceProductModel!
+                                                    .docId!
+                                                : AppUtils.getUniqueID();
+
+                                        // if (imagePickerProvider
+                                        //     .getImageBytes.isEmpty) {
+                                        //   AppUtils.toastMessage(
+                                        //       'Please Select Image');
+                                        //   return;
+                                        // }
 
                                         imagePickerProvider.setImageUrl =
                                             await AuthServices
@@ -488,10 +491,11 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                                     image: imagePickerProvider
                                                         .getImageBytes);
                                         String docId = AppUtils.getUniqueID();
+
                                         EcommerceProductModel productModel =
                                             EcommerceProductModel(
                                                 title: _titleController.text,
-                                                docId: docId,
+                                                docId: productId,
                                                 category:
                                                     _categoryController.text,
                                                 description:
@@ -507,29 +511,31 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                                     _productCodeController.text,
                                                 imageUrl: imagePickerProvider
                                                     .getImageUrl);
+                                        log('..............call{$docId}');
                                         SchedulerBinding.instance
                                             .addPostFrameCallback((timeStamp) {
-                                          // if (widget.ecommerceProductModel !=
-                                          //     null) {
-                                          //   EcommerceServices.updateProducts(
-                                          //           productModel: product,
-                                          //           context: context)
-                                          //       .then((value) {
-                                          //     isLoadingNotifier.value = false;
-                                          //   });
-                                          // } else {
-                                          // ignore: use_build_context_synchronously
-                                          EcommerceServices.uploadProducts(
-                                                  productModel: productModel,
-                                                  docId: docId)
-                                              .then((value) {
-                                            AppUtils.toastMessage(
-                                                'Product created successfully');
-                                            isLoadingNotifier.value = false;
-                                          });
+                                          if (widget.ecommerceProductModel !=
+                                              null) {
+                                            EcommerceServices.updateProduct(
+                                                    productModel: productModel,
+                                                    productID:
+                                                        productModel.docId!,
+                                                    context: context)
+                                                .then((value) {
+                                              isLoadingNotifier.value = false;
+                                            });
+                                          } else {
+                                            EcommerceServices.uploadProducts(
+                                                    productModel: productModel,
+                                                    docId: productId)
+                                                .then((value) {
+                                              AppUtils.toastMessage(
+                                                  'Product created successfully');
+                                              isLoadingNotifier.value = false;
+                                            });
+                                          }
                                         });
 
-                                        // ignore: use_build_context_synchronously
                                         Navigator.pop(context);
                                       }
                                     },

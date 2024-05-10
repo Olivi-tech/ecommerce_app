@@ -8,18 +8,13 @@ import '../widgets/custom_snackbar.dart';
 
 class ApiServices {
   static Future<bool?> deleteProductImage(
-      {required String reference,
-      required String imageId,
-      required BuildContext context}) async {
+      {required String imageId, required BuildContext context}) async {
     try {
-      Reference ref = AppUtils.storageRef().child('$reference/images/$imageId');
+      Reference ref = AppUtils.storageRef().child('');
       await ref.delete();
       return true;
     } on FirebaseException catch (error) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        CustomSnackBar.showSnackBar(
-            context: context, message: error.toString(), isError: true);
-      });
+      ;
     }
     return null;
   }
