@@ -1,5 +1,6 @@
 import 'package:e_commerece_admin_panel/firebase_options.dart';
-import 'package:e_commerece_admin_panel/models/product_model_provide.dart';
+import 'package:e_commerece_admin_panel/providers/clear_All_provider.dart';
+import 'package:e_commerece_admin_panel/providers/product_model_provide.dart';
 import 'package:e_commerece_admin_panel/providers/edit_image_provider.dart';
 import 'package:e_commerece_admin_panel/providers/image_picker_provider.dart';
 import 'package:e_commerece_admin_panel/providers/screen_transition_provider.dart';
@@ -24,6 +25,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<SearchProvider>(
+          create: (context) => SearchProvider(),
+        ),
         ChangeNotifierProvider<EditImagePickerProvider>(
           create: (context) => EditImagePickerProvider(),
         ),
