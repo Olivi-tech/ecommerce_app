@@ -1,8 +1,10 @@
 import 'package:e_commerece_admin_panel/firebase_options.dart';
 import 'package:e_commerece_admin_panel/providers/clear_All_provider.dart';
+import 'package:e_commerece_admin_panel/providers/drop_down_provider.dart';
 import 'package:e_commerece_admin_panel/providers/product_model_provide.dart';
 import 'package:e_commerece_admin_panel/providers/edit_image_provider.dart';
 import 'package:e_commerece_admin_panel/providers/image_picker_provider.dart';
+import 'package:e_commerece_admin_panel/providers/routing_provider.dart';
 import 'package:e_commerece_admin_panel/providers/screen_transition_provider.dart';
 import 'package:e_commerece_admin_panel/screens/sign_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +27,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<RoutingProvider>(
+          create: (context) => RoutingProvider(),
+        ),
+        ChangeNotifierProvider<DropDownProvider>(
+          create: (context) => DropDownProvider(),
+        ),
         ChangeNotifierProvider<SearchProvider>(
           create: (context) => SearchProvider(),
         ),

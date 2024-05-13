@@ -44,6 +44,7 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
     imagePickerProvider =
         Provider.of<ImagePickerProvider>(context, listen: false);
     if (widget.ecommerceProductModel != null) {
+      print('the image is ${widget.ecommerceProductModel!.imageUrl!} ');
       imagePickerProvider.setImageUrl = widget.ecommerceProductModel!.imageUrl!;
       _titleController.text = widget.ecommerceProductModel!.title!;
       _priceController.text = widget.ecommerceProductModel!.price!.toString();
@@ -467,76 +468,115 @@ class _AddEcommerceProductState extends State<AddEcommerceProduct> {
                                     isLoading: isLoading,
                                     color: AppColors.red,
                                     textColor: AppColors.white,
+                                    // Inside the onPressed callback of your CustomButton
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         isLoadingNotifier.value = true;
-
+                                        // Check if the image has been updated
+                                        bool isImageUpdated = widget
+                                                .ecommerceProductModel
+                                                ?.imageUrl !=
+                                            imagePickerProvider.getImageUrl;
+                                        // If image is updated, upload the new image
+                                        if (isImageUpdated) {
+                                          imagePickerProvider.setImageUrl =
+                                              await AuthServices
+                                                  .storeProductsImageToFirebase(
+                                                      context: context,
+                                                      image: imagePickerProvider
+                                                          .getImageBytes);
+                                        }
                                         String productId =
                                             widget.ecommerceProductModel != null
                                                 ? widget.ecommerceProductModel!
                                                     .docId!
                                                 : AppUtils.getUniqueID();
-
-                                        // if (imagePickerProvider
-                                        //     .getImageBytes.isEmpty) {
-                                        //   AppUtils.toastMessage(
-                                        //       'Please Select Image');
-                                        //   return;
-                                        // }
-
-                                        imagePickerProvider.setImageUrl =
-                                            await AuthServices
-                                                .storeProductsImageToFirebase(
-                                                    context: context,
-                                                    image: imagePickerProvider
-                                                        .getImageBytes);
-                                        String docId = AppUtils.getUniqueID();
-
                                         EcommerceProductModel productModel =
                                             EcommerceProductModel(
-                                                title: _titleController.text,
-                                                docId: productId,
-                                                category:
-                                                    _categoryController.text,
-                                                description:
-                                                    _descriptionController.text,
-                                                price: double.parse(
-                                                    _priceController.text),
-                                                deliveryCharges: double.parse(
-                                                    _deliveryChargesController
-                                                        .text),
-                                                discount: double.parse(
-                                                    _discountController.text),
-                                                productCode:
-                                                    _productCodeController.text,
-                                                imageUrl: imagePickerProvider
-                                                    .getImageUrl);
-                                        log('..............call{$docId}');
-                                        SchedulerBinding.instance
+                                          title: _titleController.text,
+                                          docId: productId,
+                                          category: _categoryController.text,
+                                          description:
+                                              _descriptionController.text,
+                                          price: double.parse(
+                                              _priceController.text),
+                                          deliveryCharges: double.parse(
+                                              _deliveryChargesController.text),
+                                          discount: double.parse(
+                                              _discountController.text),
+                                          productCode:
+                                              _productCodeController.text,
+                                          imageUrl: isImageUpdated
+                                              ? imagePickerProvider.getImageUrl
+                                              : widget.ecommerceProductModel
+                                                      ?.imageUrl ??
+                                                  '',
+                                        );
+                                        SchedulerBinding.instance!
                                             .addPostFrameCallback((timeStamp) {
                                           if (widget.ecommerceProductModel !=
                                               null) {
-                                            EcommerceServices.updateProduct(
-                                                    productModel: productModel,
-                                                    productID:
-                                                        productModel.docId!,
-                                                    context: context)
-                                                .then((value) {
-                                              isLoadingNotifier.value = false;
-                                            });
+                                            if (isImageUpdated) {
+                                              // Delete the previous image from Firebase Storage if it's not the default placeholder image
+                                              if (widget.ecommerceProductModel!
+                                                          .imageUrl !=
+                                                      null &&
+                                                  widget.ecommerceProductModel!
+                                                          .imageUrl !=
+                                                      '') {
+                                                AuthServices
+                                                    .deleteImageFromFirebaseStorage(
+                                                        widget
+                                                            .ecommerceProductModel!
+                                                            .imageUrl!);
+                                              }
+                                              // Update the product with the new image URL
+                                              EcommerceServices.updateProduct(
+                                                      productModel:
+                                                          productModel,
+                                                      productID:
+                                                          productModel.docId!,
+                                                      context: context)
+                                                  .then((value) {
+                                                isLoadingNotifier.value = false;
+                                              });
+                                            } else {
+                                              // If image is not updated, directly update other product details
+                                              EcommerceServices.updateProduct(
+                                                      productModel:
+                                                          productModel,
+                                                      productID:
+                                                          productModel.docId!,
+                                                      context: context)
+                                                  .then((value) {
+                                                isLoadingNotifier.value = false;
+                                                AppUtils.toastMessage(
+                                                    'Product updated successfully');
+
+                                                imagePickerProvider
+                                                    .setImageUrl = '';
+                                                widget.ecommerceProductModel!
+                                                    .imageUrl = '';
+                                              });
+                                            }
                                           } else {
+                                            // Upload the new product with the image
                                             EcommerceServices.uploadProducts(
                                                     productModel: productModel,
                                                     docId: productId)
                                                 .then((value) {
                                               AppUtils.toastMessage(
                                                   'Product created successfully');
+
                                               isLoadingNotifier.value = false;
+                                              imagePickerProvider.setImageUrl =
+                                                  '';
+                                              widget.ecommerceProductModel!
+                                                  .imageUrl = '';
                                             });
                                           }
+                                          Navigator.pop(context);
                                         });
-
-                                        Navigator.pop(context);
                                       }
                                     },
                                     text: widget.ecommerceProductModel == null

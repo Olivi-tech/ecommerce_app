@@ -25,6 +25,7 @@ class ImagePickerProvider extends ChangeNotifier {
   }
 
   void clear() {
+    _imageUrl = '';
     _imageBytes = Uint8List.fromList([]);
     notifyListeners();
   }

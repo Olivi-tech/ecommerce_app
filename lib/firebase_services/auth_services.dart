@@ -13,6 +13,18 @@ class AuthServices {
     return FirebaseAuth.instance.currentUser!;
   }
 
+  static Future<void> deleteImageFromFirebaseStorage(String imageUrl) async {
+    try {
+      // Create a reference to the image file
+      Reference imageRef = FirebaseStorage.instance.refFromURL(imageUrl);
+      // Delete the file
+      await imageRef.delete();
+    } catch (error) {
+      print('Error deleting image from Firebase Storage: $error');
+      throw error;
+    }
+  }
+
   static Future<bool> login({
     required String email,
     required String password,

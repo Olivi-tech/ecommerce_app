@@ -76,4 +76,12 @@ class EcommerceServices {
       });
     }
   }
+
+  static Stream<List<String>> fetchCatagory() {
+    return fireStore.collection('products').snapshots().map((query) {
+      return query.docs
+          .map((doc) => doc.data()['category'].toString())
+          .toList();
+    });
+  }
 }
