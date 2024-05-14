@@ -1,50 +1,53 @@
 import 'dart:developer';
+
+import 'package:e_commerece_admin_panel/constants/app_colors.dart';
+import 'package:e_commerece_admin_panel/constants/custom_appbar.dart';
 import 'package:e_commerece_admin_panel/firebase_services/ecommerece_services.dart';
+import 'package:e_commerece_admin_panel/models/deals_model.dart';
 import 'package:e_commerece_admin_panel/providers/clear_All_provider.dart';
+import 'package:e_commerece_admin_panel/providers/drop_down_provider.dart';
 import 'package:e_commerece_admin_panel/providers/image_picker_provider.dart';
+import 'package:e_commerece_admin_panel/screens/add_deals.dart';
 import 'package:e_commerece_admin_panel/utils/show_delete_dialog.dart';
+import 'package:e_commerece_admin_panel/widgets/custom_container.dart';
+import 'package:e_commerece_admin_panel/widgets/custom_display_image.dart';
+import 'package:e_commerece_admin_panel/widgets/custom_size.dart';
+import 'package:e_commerece_admin_panel/widgets/custom_text.dart';
+import 'package:e_commerece_admin_panel/widgets/drop_down_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import '../constants/app_colors.dart';
-import '../constants/custom_appbar.dart';
-import '../models/ecommerce_product_model.dart';
-import '../providers/drop_down_provider.dart';
-import '../widgets/custom_container.dart';
-import '../widgets/custom_display_image.dart';
-import '../widgets/custom_size.dart';
-import '../widgets/custom_text.dart';
-import '../widgets/drop_down_widget.dart';
-import 'add_ecommerece_product.dart';
 
-class EcommerceScreen extends StatefulWidget {
-  const EcommerceScreen({super.key});
+class DealsScreen extends StatefulWidget {
+  const DealsScreen({super.key});
+
   @override
-  State<EcommerceScreen> createState() => _EcommerceScreenState();
+  State<DealsScreen> createState() => _DealsScreenState();
 }
 
 TextEditingController searchController = TextEditingController();
-late Stream<List<EcommerceProductModel>> fetchProducts;
+late Stream<List<EcommerceDealsModel>> fetchDeals;
 late ImagePickerProvider pickerProvider;
-late EcommerceProductModel? ecommerceProductModel;
+late EcommerceDealsModel? ecommerceDealsModel;
 late SearchProvider searchProvider;
 ValueNotifier<String> searchNotifier = ValueNotifier<String>('');
 TextEditingController controller = TextEditingController();
-List<EcommerceProductModel> filterEventData = [];
-List<EcommerceProductModel> eventData = [];
+List<EcommerceDealsModel> filterEventData = [];
+List<EcommerceDealsModel> eventData = [];
 ValueNotifier<String> selectedValueNotifier = ValueNotifier('All');
 late Stream<List<String>> catagory = EcommerceServices.fetchCatagory();
 late ImagePickerProvider imagePickerProvider;
 
-class _EcommerceScreenState extends State<EcommerceScreen> {
+class _DealsScreenState extends State<DealsScreen> {
   @override
   void initState() {
     imagePickerProvider =
         Provider.of<ImagePickerProvider>(context, listen: false);
     searchProvider = Provider.of<SearchProvider>(context, listen: false);
-    fetchProducts = EcommerceServices.fetchProducts();
+    fetchDeals = EcommerceServices.fetchDeals();
     pickerProvider = Provider.of<ImagePickerProvider>(context, listen: false);
+
     super.initState();
   }
 
@@ -81,8 +84,7 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddEcommerceProduct(),
+                                    builder: (context) => const CreateDeals(),
                                   ));
                             },
                             child: const CustomContainer(
@@ -195,8 +197,8 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
                   SizedBox(
                       height: height,
                       width: width,
-                      child: StreamBuilder<List<EcommerceProductModel>>(
-                        stream: fetchProducts,
+                      child: StreamBuilder<List<EcommerceDealsModel>>(
+                        stream: fetchDeals,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -209,11 +211,11 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
                           } else if (!snapshot.hasData ||
                               snapshot.data!.isEmpty) {
                             return const Center(
-                                child: Text('No products found here'));
+                                child: Text('No deals available'));
                           } else {
                             return Consumer<DropDownProvider>(
                               builder: (context, provider, _) {
-                                List<EcommerceProductModel> filteredProducts =
+                                List<EcommerceDealsModel> filteredProducts =
                                     provider.selectedOption.isEmpty
                                         ? snapshot.data!
                                         : snapshot.data!
@@ -252,37 +254,42 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
                                                 mainAxisSpacing: 20),
                                         itemBuilder: (context, index) =>
                                             _productContainer(
-                                          onEdit: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddEcommerceProduct(
-                                                  ecommerceProductModel:
-                                                      filteredProducts[index],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          onDelete: () {
-                                            ShowDeleteDialog.showDeleteDialog(
-                                              context: context,
-                                              deleteButton: () {
-                                                log('..........productid....${filteredProducts[index].docId}');
-                                                EcommerceServices.deleteProduct(
-                                                  productId:
-                                                      '${filteredProducts[index].docId}',
-                                                  context: context,
-                                                );
-                                              },
-                                            );
-                                          },
-                                          imagePath:
-                                              '${filteredProducts[index].imageUrl}',
-                                          title:
-                                              '${filteredProducts[index].title}',
-                                          price: filteredProducts[index].price,
-                                        ),
+                                                onEdit: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CreateDeals(
+                                                        ecommerceDealsModel:
+                                                            filteredProducts[
+                                                                index],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                onDelete: () {
+                                                  ShowDeleteDialog
+                                                      .showDeleteDialog(
+                                                    context: context,
+                                                    deleteButton: () {
+                                                      log('..........productid....${filteredProducts[index].docId}');
+                                                      EcommerceServices
+                                                          .deleteDeals(
+                                                        dealsId:
+                                                            '${filteredProducts[index].docId}',
+                                                        context: context,
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                imagePath:
+                                                    '${filteredProducts[index].imageUrl}',
+                                                title:
+                                                    '${filteredProducts[index].title}',
+                                                price: filteredProducts[index]
+                                                    .price,
+                                                duration:
+                                                    '${filteredProducts[index].duration}'),
                                       );
                                     } else {
                                       return const Text('');
@@ -307,129 +314,149 @@ class _EcommerceScreenState extends State<EcommerceScreen> {
     required VoidCallback onEdit,
     required VoidCallback onDelete,
     double? price,
+    String? duration,
   }) {
     return CustomContainer(
       borderColor: Colors.grey.withOpacity(0.3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: SizedBox(
-                width: double.infinity,
-                child: ImageView(
-                  imageUrl: imagePath!,
-                )),
-          ),
-          const CustomSize(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const CustomText(
-                      size: 12,
-                      label: 'title: ',
-                      color: AppColors.black,
-                    ),
-                    CustomText(
-                      size: 12,
-                      label: '$title',
-                      color: AppColors.black,
-                    ),
-                  ],
-                ),
-                const CustomSize(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    const CustomText(
-                      size: 12,
-                      label: 'Price: ',
-                      color: AppColors.black,
-                    ),
-                    CustomText(
-                      size: 12,
-                      label: '$price',
-                      color: AppColors.black,
-                    ),
-                  ],
-                ),
-                const CustomSize(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
+      child: Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SizedBox(
+                  width: double.infinity,
+                  child: ImageView(
+                    imageUrl: imagePath!,
+                  )),
+            ),
+            const CustomSize(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: onEdit,
-                          child: CustomContainer(
-                            height: 25,
-                            borderColor: Colors.grey.withOpacity(0.3),
-                            color: AppColors.white,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.edit,
-                                  color: AppColors.darkGrey,
-                                  size: 15,
-                                ),
-                                CustomSize(
-                                  width: 5,
-                                ),
-                                CustomText(
-                                  label: 'Edit',
-                                  weight: FontWeight.w700,
-                                  size: 10,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
+                      const CustomText(
+                        size: 12,
+                        label: 'title: ',
+                        color: AppColors.black,
                       ),
-                      const CustomSize(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: onDelete,
-                          child: CustomContainer(
-                            height: 25,
-                            borderColor: Colors.grey.withOpacity(0.3),
-                            color: AppColors.white,
-                            child: const Center(
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.delete,
-                                        color: Colors.red, size: 15),
-                                    CustomText(
-                                      label: 'Delete',
-                                      size: 10,
-                                      color: Colors.red,
-                                    )
-                                  ]),
-                            ),
-                          ),
-                        ),
+                      CustomText(
+                        size: 12,
+                        label: '$title',
+                        color: AppColors.black,
                       ),
                     ],
                   ),
-                ),
-                const CustomSize(
-                  height: 10,
-                )
-              ],
-            ),
-          )
-        ],
+                  const CustomSize(
+                    height: 5,
+                  ),
+                  Row(
+                    children: [
+                      const CustomText(
+                        size: 12,
+                        label: 'Price: ',
+                        color: AppColors.black,
+                      ),
+                      CustomText(
+                        size: 12,
+                        label: '$price',
+                        color: AppColors.black,
+                      ),
+                    ],
+                  ),
+                  const CustomSize(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      const CustomText(
+                        size: 12,
+                        label: 'duration: ',
+                        color: AppColors.black,
+                      ),
+                      CustomText(
+                        size: 12,
+                        label: '$duration',
+                        color: AppColors.black,
+                      ),
+                    ],
+                  ),
+                  const CustomSize(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: onEdit,
+                            child: CustomContainer(
+                              height: 25,
+                              borderColor: Colors.grey.withOpacity(0.3),
+                              color: AppColors.white,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: AppColors.darkGrey,
+                                    size: 15,
+                                  ),
+                                  CustomSize(
+                                    width: 5,
+                                  ),
+                                  CustomText(
+                                    label: 'Edit',
+                                    weight: FontWeight.w700,
+                                    size: 10,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const CustomSize(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: onDelete,
+                            child: CustomContainer(
+                              height: 25,
+                              borderColor: Colors.grey.withOpacity(0.3),
+                              color: AppColors.white,
+                              child: const Center(
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.delete,
+                                          color: Colors.red, size: 15),
+                                      CustomText(
+                                        label: 'Delete',
+                                        size: 10,
+                                        color: Colors.red,
+                                      )
+                                    ]),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const CustomSize(
+                    height: 10,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

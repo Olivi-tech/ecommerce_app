@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-import 'package:e_commerece_admin_panel/screens/e_commerce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -94,9 +92,29 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     textColor: providerIndex.getIndex == 1
                         ? AppColors.white
                         : AppColors.darkGrey,
-                    text: 'Settings',
+                    text: 'Deals',
                   ),
-                )
+                ),
+                //  SizedBox(height: height * 0.015),
+                // InkWell(
+                //   onTap: () {
+                //     screenTransitionProvider.setIndex = 2;
+                //   },
+                //   child: buildCustomContainer(
+                //     iconPath: AppImages.settings,
+                //     height: height * 0.07,
+                //     iconColor: providerIndex.getIndex == 2
+                //         ? AppColors.white
+                //         : AppColors.darkGrey,
+                //     bgColor: providerIndex.getIndex == 2
+                //         ? AppColors.red
+                //         : AppColors.white,
+                //     textColor: providerIndex.getIndex == 2
+                //         ? AppColors.white
+                //         : AppColors.darkGrey,
+                //     text: 'Setting',
+                //   ),
+                // )
               ],
             ),
           ),

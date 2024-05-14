@@ -1,3 +1,4 @@
+import 'package:e_commerece_admin_panel/screens/deals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_colors.dart';
@@ -58,7 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, providerIndex, child) {
                 return providerIndex.getIndex == 0
                     ? const EcommerceScreen()
-                    : const SettingScreen();
+                    : providerIndex.getIndex == 1
+                        ? const DealsScreen()
+                        : const SettingScreen();
               }),
             ),
           ),

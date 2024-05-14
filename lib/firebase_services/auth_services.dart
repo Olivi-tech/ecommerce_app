@@ -87,4 +87,20 @@ class AuthServices {
       return '';
     }
   }
+
+  static Future<String> storeDealsImageToFirebase(
+      {required BuildContext context, required Uint8List image}) async {
+    final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+    final profileImage = firebaseStorage
+        .ref('deals_images')
+        .child("${DateTime.timestamp().millisecondsSinceEpoch}");
+    try {
+      await profileImage.putData(
+          image, SettableMetadata(contentType: "image/png"));
+      return await profileImage.getDownloadURL();
+    } on FirebaseException catch (error) {
+      log('Image Uploading Error:$error ');
+      return '';
+    }
+  }
 }

@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 
 class ProductModelProvider extends ChangeNotifier {
   EcommerceProductModel? _ecommerceProductModel;
-
   EcommerceProductModel? get getEvents => _ecommerceProductModel;
-
   set setEvents(EcommerceProductModel? newProduct) {
     _ecommerceProductModel = newProduct;
     notifyListeners();
@@ -17,9 +15,7 @@ class ProductModelProvider extends ChangeNotifier {
   }
 
   bool _isEditMode = false;
-
   bool get isEditMode => _isEditMode;
-
   set setEditMode(bool value) {
     _isEditMode = value;
     notifyListeners();
