@@ -81,7 +81,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     screenTransitionProvider.setIndex = 1;
                   },
                   child: buildCustomContainer(
-                    iconPath: AppImages.settings,
+                    iconPath: AppImages.deals,
                     height: height * 0.07,
                     iconColor: providerIndex.getIndex == 1
                         ? AppColors.white
@@ -95,26 +95,26 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     text: 'Deals',
                   ),
                 ),
-                //  SizedBox(height: height * 0.015),
-                // InkWell(
-                //   onTap: () {
-                //     screenTransitionProvider.setIndex = 2;
-                //   },
-                //   child: buildCustomContainer(
-                //     iconPath: AppImages.settings,
-                //     height: height * 0.07,
-                //     iconColor: providerIndex.getIndex == 2
-                //         ? AppColors.white
-                //         : AppColors.darkGrey,
-                //     bgColor: providerIndex.getIndex == 2
-                //         ? AppColors.red
-                //         : AppColors.white,
-                //     textColor: providerIndex.getIndex == 2
-                //         ? AppColors.white
-                //         : AppColors.darkGrey,
-                //     text: 'Setting',
-                //   ),
-                // )
+                SizedBox(height: height * 0.015),
+                InkWell(
+                  onTap: () {
+                    screenTransitionProvider.setIndex = 2;
+                  },
+                  child: buildCustomContainer(
+                    iconPath: AppImages.seasonOff,
+                    height: height * 0.07,
+                    iconColor: providerIndex.getIndex == 2
+                        ? AppColors.white
+                        : AppColors.darkGrey,
+                    bgColor: providerIndex.getIndex == 2
+                        ? AppColors.red
+                        : AppColors.white,
+                    textColor: providerIndex.getIndex == 2
+                        ? AppColors.white
+                        : AppColors.darkGrey,
+                    text: 'Overall Off',
+                  ),
+                )
               ],
             ),
           ),

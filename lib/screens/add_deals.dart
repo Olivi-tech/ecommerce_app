@@ -492,11 +492,10 @@ class _CreateDealsState extends State<CreateDeals> {
                                     isLoading: isLoading,
                                     color: AppColors.red,
                                     textColor: AppColors.white,
-                                    // Inside the onPressed callback of your CustomButton
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         isLoadingNotifier.value = true;
-                                        // Check if the image has been updated
+
                                         bool isImageUpdated = widget
                                                 .ecommerceDealsModel
                                                 ?.imageUrl !=

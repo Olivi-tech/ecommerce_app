@@ -1,3 +1,4 @@
+import 'package:e_commerece_admin_panel/screens/add_off.dart';
 import 'package:e_commerece_admin_panel/screens/deals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? const EcommerceScreen()
                     : providerIndex.getIndex == 1
                         ? const DealsScreen()
-                        : const SettingScreen();
+                        : providerIndex.getIndex == 2
+                            ? const AddOff()
+                            : const SettingScreen();
               }),
             ),
           ),

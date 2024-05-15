@@ -6,4 +6,7 @@ class AppImages {
   static const settings = 'assets/svgs/settings.svg';
   static const rainbow = 'assets/images/rainbow.jpeg';
   static const btsBoy = 'assets/images/bts_boy.png';
+  static const deals = 'assets/svgs/Flash Icon.svg';
+  static const offImage = 'assets/images/off_image.jpg';
+  static const seasonOff = 'assets/svgs/Gift Icon.svg';
 }

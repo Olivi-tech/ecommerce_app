@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerece_admin_panel/firebase_services/api_services.dart';
 import 'package:e_commerece_admin_panel/models/deals_model.dart';
+import 'package:e_commerece_admin_panel/models/off_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
@@ -107,6 +108,13 @@ class EcommerceServices {
           .map((doc) => doc.data()['category'].toString())
           .toList();
     });
+  }
+
+  static Future<void> uploadOff(
+      {required OffModel offModel, required String docId}) async {
+    FirebaseFirestore.instance.collection('season_off').doc(docId).set(
+          offModel.toJson(),
+        );
   }
 
   static Future<void> deleteDeals({
